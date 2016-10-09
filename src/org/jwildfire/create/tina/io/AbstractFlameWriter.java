@@ -63,6 +63,7 @@ import org.jwildfire.create.tina.base.solidrender.MaterialSettings;
 import org.jwildfire.create.tina.base.solidrender.PointLight;
 import org.jwildfire.create.tina.palette.RGBPalette;
 import org.jwildfire.create.tina.render.dof.DOFBlurShape;
+import org.jwildfire.create.tina.variation.RessourceName;
 import org.jwildfire.create.tina.variation.Variation;
 import org.jwildfire.create.tina.variation.VariationFunc;
 
@@ -126,13 +127,11 @@ public class AbstractFlameWriter {
       writeMotionCurves(v, pXB, attrList, fName + "_", blackList);
       // ressources
       {
-        String ressNames[] = func.getRessourceNames();
-        if (ressNames != null) {
-          byte vals[][] = func.getRessourceValues();
-          for (int i = 0; i < ressNames.length; i++) {
-            String hexStr = vals[i] != null && vals[i].length > 0 ? Tools.byteArrayToHexString(vals[i]) : "";
-            attrList.add(pXB.createAttr((fName + "_" + ressNames[i]), hexStr));
-          }
+        final RessourceName[] ressNames = func.getRessourceNames();
+        if (ressNames != null) for (RessourceName rName : ressNames) {
+            final byte[] val = func.getRessource(rName);
+            String hexStr = val != null && val.length > 0 ? Tools.byteArrayToHexString(val) : "";
+            attrList.add(pXB.createAttr((fName + "_" + rName.toString()), hexStr));
         }
       }
     }

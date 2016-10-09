@@ -50,13 +50,7 @@ public abstract class AbstractColorMapWFFunc extends VariationFunc {
   private static final String PARAM_SEQUENCE_START = "sequence_start";
   private static final String PARAM_SEQUENCE_DIGITS = "sequence_digits";
 
-  private static final String RESSOURCE_IMAGE_FILENAME = "image_filename";
-  public static final String RESSOURCE_INLINED_IMAGE = "inlined_image";
-  public static final String RESSOURCE_IMAGE_SRC = "image_src";
-  public static final String RESSOURCE_IMAGE_DESC_SRC = "image_desc_src";
-
   private static final String[] paramNames = { PARAM_SCALEX, PARAM_SCALEY, PARAM_SCALEZ, PARAM_OFFSETX, PARAM_OFFSETY, PARAM_OFFSETZ, PARAM_TILEX, PARAM_TILEY, PARAM_RESETZ, PARAM_IS_SEQUENCE, PARAM_SEQUENCE_START, PARAM_SEQUENCE_DIGITS };
-  private static final String[] ressourceNames = { RESSOURCE_IMAGE_FILENAME, RESSOURCE_INLINED_IMAGE, RESSOURCE_IMAGE_DESC_SRC, RESSOURCE_IMAGE_SRC };
 
   private double scaleX = 1.0;
   private double scaleY = 1.0;
@@ -67,10 +61,6 @@ public abstract class AbstractColorMapWFFunc extends VariationFunc {
   private int tileX = 1;
   private int tileY = 1;
   private int resetZ = 1;
-  private String imageFilename = null;
-  private byte[] inlinedImage = null;
-  private String imageDescSrc = null;
-  private String imageSrc = null;
   private int inlinedImageHash = 0;
   private int is_sequence = 0;
   private int sequence_start = 1;
@@ -227,6 +217,8 @@ public abstract class AbstractColorMapWFFunc extends VariationFunc {
   public void init(FlameTransformationContext pContext, Layer pLayer, XForm pXForm, double pAmount) {
     colorMap = null;
     renderColors = pLayer.getPalette().createRenderPalette(pContext.getFlameRenderer().getFlame().getWhiteLevel());
+    final String imageFilename = getResourceValueString(RessourceName.IMAGE_FILENAME);
+    final byte[] inlinedImage = getResourceValue(RessourceName.INLINED_IMAGE);
     if (inlinedImage != null) {
       try {
         colorMap = RessourceManager.getImage(inlinedImageHash, inlinedImage);
@@ -251,6 +243,7 @@ public abstract class AbstractColorMapWFFunc extends VariationFunc {
   }
 
   private String getCurrImageFilename(FlameTransformationContext pContext) {
+    final String imageFilename = getResourceValueString(RessourceName.IMAGE_FILENAME);
     if (is_sequence > 0) {
       int frame = pContext.getFrame() - 1 + sequence_start;
       String baseFilename;
@@ -284,57 +277,28 @@ public abstract class AbstractColorMapWFFunc extends VariationFunc {
   }
 
   @Override
-  public String[] getRessourceNames() {
-    return ressourceNames;
+  protected void initRessources() {
+    addRessource(RessourceName.IMAGE_FILENAME, RessourceType.IMAGE_FILENAME, null);
+    addRessource(RessourceName.INLINED_IMAGE, RessourceType.IMAGE_FILE, null);
+    addRessource(RessourceName.IMAGE_DESC_SRC, RessourceType.HREF, null);
+    addRessource(RessourceName.IMAGE_SRC, RessourceType.HREF, null);
   }
 
   @Override
-  public byte[][] getRessourceValues() {
-    return new byte[][] { (imageFilename != null ? imageFilename.getBytes() : null), inlinedImage, (imageDescSrc != null ? imageDescSrc.getBytes() : null), (imageSrc != null ? imageSrc.getBytes() : null) };
-  }
-
-  @Override
-  public void setRessource(String pName, byte[] pValue) {
-    if (RESSOURCE_IMAGE_FILENAME.equalsIgnoreCase(pName)) {
-      imageFilename = pValue != null ? new String(pValue) : "";
-      clearCurrColorMap();
+  public void setRessource(RessourceName rName, byte[] rValue) {
+    setResourceValue(rName, rValue);
+    switch (rName) {
+    case IMAGE_FILENAME:
+    case INLINED_IMAGE:
+        clearCurrColorMap();
+        break;
+    default:
     }
-    else if (RESSOURCE_INLINED_IMAGE.equalsIgnoreCase(pName)) {
-      inlinedImage = pValue;
-      inlinedImageHash = RessourceManager.calcHashCode(inlinedImage);
-      clearCurrColorMap();
-    }
-    else if (RESSOURCE_IMAGE_DESC_SRC.equalsIgnoreCase(pName)) {
-      imageDescSrc = pValue != null ? new String(pValue) : "";
-    }
-    else if (RESSOURCE_IMAGE_SRC.equalsIgnoreCase(pName)) {
-      imageSrc = pValue != null ? new String(pValue) : "";
-    }
-    else
-      throw new IllegalArgumentException(pName);
   }
 
   private void clearCurrColorMap() {
     colorMap = null;
     colorIdxMap.clear();
-  }
-
-  @Override
-  public RessourceType getRessourceType(String pName) {
-    if (RESSOURCE_IMAGE_FILENAME.equalsIgnoreCase(pName)) {
-      return RessourceType.IMAGE_FILENAME;
-    }
-    else if (RESSOURCE_INLINED_IMAGE.equalsIgnoreCase(pName)) {
-      return RessourceType.IMAGE_FILE;
-    }
-    else if (RESSOURCE_IMAGE_DESC_SRC.equalsIgnoreCase(pName)) {
-      return RessourceType.HREF;
-    }
-    else if (RESSOURCE_IMAGE_SRC.equalsIgnoreCase(pName)) {
-      return RessourceType.HREF;
-    }
-    else
-      throw new IllegalArgumentException(pName);
   }
 
 }

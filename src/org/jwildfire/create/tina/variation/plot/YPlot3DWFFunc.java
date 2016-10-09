@@ -26,6 +26,8 @@ import org.jwildfire.create.tina.base.Layer;
 import org.jwildfire.create.tina.base.XForm;
 import org.jwildfire.create.tina.base.XYZPoint;
 import org.jwildfire.create.tina.variation.FlameTransformationContext;
+import org.jwildfire.create.tina.variation.RessourceName;
+import org.jwildfire.create.tina.variation.RessourceType;
 import org.jwildfire.create.tina.variation.VariationFunc;
 import org.nfunk.jep.Node;
 
@@ -41,11 +43,7 @@ public class YPlot3DWFFunc extends VariationFunc {
   private static final String PARAM_ZMAX = "zmax";
   private static final String PARAM_DIRECT_COLOR = "direct_color";
 
-  private static final String RESSOURCE_FORMULA = "formula";
-
   private static final String[] paramNames = { PARAM_PRESET_ID, PARAM_XMIN, PARAM_XMAX, PARAM_YMIN, PARAM_YMAX, PARAM_ZMIN, PARAM_ZMAX, PARAM_DIRECT_COLOR };
-
-  private static final String[] ressourceNames = { RESSOURCE_FORMULA };
 
   private int preset_id = -1;
 
@@ -56,8 +54,6 @@ public class YPlot3DWFFunc extends VariationFunc {
   private double zmin = -2.0;
   private double zmax = 2.0;
   private int direct_color = 1;
-
-  private String formula;
 
   @Override
   public void transform(FlameTransformationContext pContext, XForm pXForm, XYZPoint pAffineTP, XYZPoint pVarTP, double pAmount) {
@@ -131,23 +127,14 @@ public class YPlot3DWFFunc extends VariationFunc {
   }
 
   @Override
-  public String[] getRessourceNames() {
-    return ressourceNames;
+  protected void initRessources() {
+    addRessource(RessourceName.FORMULA, RessourceType.BYTEARRAY, null);
   }
-
+  
   @Override
-  public byte[][] getRessourceValues() {
-    return new byte[][] { (formula != null ? formula.getBytes() : null) };
-  }
-
-  @Override
-  public void setRessource(String pName, byte[] pValue) {
-    if (RESSOURCE_FORMULA.equalsIgnoreCase(pName)) {
-      formula = pValue != null ? new String(pValue) : "";
-      validatePresetId();
-    }
-    else
-      throw new IllegalArgumentException(pName);
+  public void setRessource(RessourceName rName, byte[] rValue) {
+    setResourceValue(rName, rValue);
+    validatePresetId();
   }
 
   private JEPWrapper _parser;
@@ -161,7 +148,7 @@ public class YPlot3DWFFunc extends VariationFunc {
     _parser = new JEPWrapper();
     _parser.addVariable("x", 0.0);
     _parser.addVariable("z", 0.0);
-    _node = _parser.parse(formula);
+    _node = _parser.parse(getResourceValueString(RessourceName.FORMULA));
 
     _xmin = xmin;
     _xmax = xmax;
@@ -200,7 +187,7 @@ public class YPlot3DWFFunc extends VariationFunc {
   private void validatePresetId() {
     if (preset_id >= 0) {
       YPlot3DWFFuncPreset preset = WFFuncPresetsStore.getYPlot3DWFFuncPresets().getPreset(preset_id);
-      if (!preset.getFormula().equals(formula) ||
+      if (!preset.getFormula().equals(getResourceValueString(RessourceName.FORMULA)) ||
           (fabs(xmin - preset.getXmin()) > EPSILON) || (fabs(xmax - preset.getXmax()) > EPSILON) ||
           (fabs(ymin - preset.getYmin()) > EPSILON) || (fabs(ymax - preset.getYmax()) > EPSILON)) {
         preset_id = -1;
@@ -210,7 +197,7 @@ public class YPlot3DWFFunc extends VariationFunc {
 
   private void refreshFormulaFromPreset(int presetId) {
     YPlot3DWFFuncPreset preset = WFFuncPresetsStore.getYPlot3DWFFuncPresets().getPreset(presetId);
-    formula = preset.getFormula();
+    setResourceValue(RessourceName.FORMULA, preset.getFormula().getBytes());
     xmin = preset.getXmin();
     xmax = preset.getXmax();
     ymin = preset.getYmin();

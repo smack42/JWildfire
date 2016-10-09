@@ -28,6 +28,7 @@ import org.jwildfire.create.tina.render.ChannelMixerMode;
 import org.jwildfire.create.tina.render.dof.DOFBlurShape;
 import org.jwildfire.create.tina.render.dof.DOFBlurShapeType;
 import org.jwildfire.create.tina.render.filter.FilterKernelType;
+import org.jwildfire.create.tina.variation.RessourceName;
 import org.jwildfire.create.tina.variation.Variation;
 import org.jwildfire.create.tina.variation.VariationFunc;
 import org.jwildfire.create.tina.variation.VariationFuncList;
@@ -903,12 +904,12 @@ public class AbstractFlameReader {
           }
           // ressources 
           {
-            String ressNames[] = variation.getFunc().getRessourceNames();
+            final RessourceName[] ressNames = variation.getFunc().getRessourceNames();
             if (ressNames != null) {
-              for (String pName : ressNames) {
+              for (RessourceName rName : ressNames) {
                 String pHs;
-                if ((pHs = atts.get(name + "_" + pName)) != null) {
-                  variation.getFunc().setRessource(pName, Tools.hexStringToByteArray(pHs));
+                if ((pHs = atts.get(name + "_" + rName.toString())) != null) {
+                  variation.getFunc().setRessource(rName, Tools.hexStringToByteArray(pHs));
                 }
               }
             }

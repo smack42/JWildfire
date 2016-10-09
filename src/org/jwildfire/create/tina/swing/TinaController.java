@@ -130,6 +130,7 @@ import org.jwildfire.create.tina.swing.flamepanel.FlamePanelControlStyle;
 import org.jwildfire.create.tina.transform.XFormTransformService;
 import org.jwildfire.create.tina.variation.Linear3DFunc;
 import org.jwildfire.create.tina.variation.RessourceManager;
+import org.jwildfire.create.tina.variation.RessourceName;
 import org.jwildfire.create.tina.variation.RessourceType;
 import org.jwildfire.create.tina.variation.Variation;
 import org.jwildfire.create.tina.variation.VariationFunc;
@@ -2523,10 +2524,10 @@ public class TinaController implements FlameHolder, LayerHolder, ScriptRunnerEnv
       pRow.getNonlinearParamsCmb().removeAllItems();
       // ressources
       int resCount = 0;
-      String[] resNames = varFunc.getRessourceNames();
+      RessourceName[] resNames = varFunc.getRessourceNames();
       if (resNames != null) {
-        for (String name : resNames) {
-          pRow.getNonlinearParamsCmb().addItem(name);
+        for (RessourceName name : resNames) {
+          pRow.getNonlinearParamsCmb().addItem(name.toString());
           resCount++;
         }
       }
@@ -3046,8 +3047,8 @@ public class TinaController implements FlameHolder, LayerHolder, ScriptRunnerEnv
             data.TinaNonlinearControlsRows[pIdx].getNonlinearParamsREd().setText(Tools.doubleToString(val));
           }
           else if ((idx = var.getFunc().getRessourceIndex(selected)) >= 0) {
-            final String rName = var.getFunc().getRessourceNames()[idx];
-            RessourceType resType = var.getFunc().getRessourceType(rName);
+            final RessourceName rName = var.getFunc().getRessourceNames()[idx];
+            final RessourceType resType = var.getFunc().getRessourceType(rName);
             switch (resType) {
               case FONT_NAME: {
                 String oldFontname = null;

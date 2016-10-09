@@ -29,6 +29,7 @@ import org.jwildfire.create.tina.base.XForm;
 import org.jwildfire.create.tina.base.XYZPoint;
 import org.jwildfire.create.tina.random.AbstractRandomGenerator;
 import org.jwildfire.create.tina.variation.FlameTransformationContext;
+import org.jwildfire.create.tina.variation.RessourceName;
 import org.jwildfire.create.tina.variation.SubFlameWFFunc;
 import org.jwildfire.create.tina.variation.VariationFunc;
 
@@ -74,7 +75,7 @@ public class SubFlameDOFBlurShape extends AbstractDOFBlurShape {
         fnc.setParameter(paramName, params.get(paramName));
       }
     }
-    fnc.setRessource(SubFlameWFFunc.RESSOURCE_FLAME, getFlameXML(Tools.FTOI(params.get(PARAM_FLAME))).getBytes());
+    fnc.setRessource(RessourceName.FLAME, getFlameXML(Tools.FTOI(params.get(PARAM_FLAME))).getBytes());
     fnc.init(pFlameTransformationContext, new Layer(), xform, 1.0);
   }
 

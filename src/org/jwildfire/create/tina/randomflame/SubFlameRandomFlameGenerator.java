@@ -24,6 +24,7 @@ import org.jwildfire.create.tina.io.FlameWriter;
 import org.jwildfire.create.tina.randomgradient.RandomGradientGeneratorList;
 import org.jwildfire.create.tina.randomsymmetry.RandomSymmetryGeneratorList;
 import org.jwildfire.create.tina.swing.RandomBatchQuality;
+import org.jwildfire.create.tina.variation.RessourceName;
 import org.jwildfire.create.tina.variation.SubFlameWFFunc;
 import org.jwildfire.create.tina.variation.VariationFunc;
 import org.jwildfire.create.tina.variation.VariationFuncList;
@@ -47,7 +48,7 @@ public class SubFlameRandomFlameGenerator extends RandomFlameGenerator {
         {
           SubFlameWFFunc var = new SubFlameWFFunc();
           String flameXML = new FlameWriter().getFlameXML(pSubFlame);
-          var.setRessource("flame", flameXML.getBytes());
+          var.setRessource(RessourceName.FLAME, flameXML.getBytes());
           xForm.addVariation(1, var);
         }
       }

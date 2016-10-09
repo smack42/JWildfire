@@ -14,6 +14,7 @@ import org.jwildfire.create.tina.random.AbstractRandomGenerator;
 import org.jwildfire.create.tina.random.JavaInternalRandomGenerator;
 import org.jwildfire.create.tina.variation.FlameTransformationContext;
 import org.jwildfire.create.tina.variation.RessourceManager;
+import org.jwildfire.create.tina.variation.RessourceName;
 import org.jwildfire.create.tina.variation.RessourceType;
 import org.jwildfire.create.tina.variation.VariationFunc;
 import org.jwildfire.image.SimpleImage;
@@ -132,10 +133,10 @@ public class ImageParams implements Params, Serializable {
   }
 
   @Override
-  public String[] appendRessourceNames(String[] pRessourceNames) {
-    List<String> res = new ArrayList<String>(Arrays.asList(pRessourceNames));
-    res.add(RESSOURCE_IMAGE_FILENAME);
-    res.add(RESSOURCE_INLINED_IMAGE);
+  public RessourceName[] appendRessourceNames(RessourceName[] pRessourceNames) {
+    List<RessourceName> res = new ArrayList<>(Arrays.asList(pRessourceNames));
+    res.add(RessourceName.IMAGE_FILENAME);
+    res.add(RessourceName.INLINED_IMAGE);
     return res.toArray(pRessourceNames);
   }
 

@@ -26,6 +26,7 @@ import org.jwildfire.create.tina.base.Flame;
 import org.jwildfire.create.tina.io.FlameReader;
 import org.jwildfire.create.tina.palette.RGBColor;
 import org.jwildfire.create.tina.variation.RessourceManager;
+import org.jwildfire.create.tina.variation.RessourceName;
 import org.jwildfire.create.tina.variation.RessourceType;
 import org.jwildfire.create.tina.variation.VariationFunc;
 import org.jwildfire.image.SimpleImage;
@@ -211,8 +212,8 @@ public class FlameParamsList extends ArrayList<FlameParams> implements Params {
   }
 
   @Override
-  public String[] appendRessourceNames(String[] pRessourceNames) {
-    List<String> res = new ArrayList<String>(Arrays.asList(pRessourceNames));
+  public RessourceName[] appendRessourceNames(RessourceName[] pRessourceNames) {
+    List<RessourceName> res = new ArrayList<>(Arrays.asList(pRessourceNames));
     for (int i = 1; i <= size(); i++) {
       String flameIndexStr = getFlameIndexStr(i);
       res.add(RESSOURCE_FLAME + flameIndexStr);

@@ -32,6 +32,7 @@ import org.jwildfire.create.tina.dance.model.FlamePropertyPath;
 import org.jwildfire.create.tina.io.FlameReader;
 import org.jwildfire.create.tina.io.FlameWriter;
 import org.jwildfire.create.tina.variation.FlameTransformationContext;
+import org.jwildfire.create.tina.variation.RessourceName;
 import org.jwildfire.create.tina.variation.SubFlameWFFunc;
 import org.jwildfire.create.tina.variation.VariationFunc;
 
@@ -68,7 +69,7 @@ public class IFlamesIterator {
         ex.printStackTrace();
       }
     }
-    fnc.setRessource(SubFlameWFFunc.RESSOURCE_FLAME, flameXML.getBytes());
+    fnc.setRessource(RessourceName.FLAME, flameXML.getBytes());
     fnc.init(pFlameTransformationContext, new Layer(), xform, 1.0);
   }
 

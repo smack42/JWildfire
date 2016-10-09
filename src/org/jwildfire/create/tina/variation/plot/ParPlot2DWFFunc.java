@@ -26,6 +26,8 @@ import org.jwildfire.create.tina.base.Layer;
 import org.jwildfire.create.tina.base.XForm;
 import org.jwildfire.create.tina.base.XYZPoint;
 import org.jwildfire.create.tina.variation.FlameTransformationContext;
+import org.jwildfire.create.tina.variation.RessourceName;
+import org.jwildfire.create.tina.variation.RessourceType;
 import org.jwildfire.create.tina.variation.VariationFunc;
 import org.nfunk.jep.Node;
 
@@ -40,13 +42,7 @@ public class ParPlot2DWFFunc extends VariationFunc {
   private static final String PARAM_DIRECT_COLOR = "direct_color";
   private static final String PARAM_COLOR_MODE = "color_mode";
 
-  private static final String RESSOURCE_XFORMULA = "xformula";
-  private static final String RESSOURCE_YFORMULA = "yformula";
-  private static final String RESSOURCE_ZFORMULA = "zformula";
-
   private static final String[] paramNames = { PARAM_PRESET_ID, PARAM_UMIN, PARAM_UMAX, PARAM_VMIN, PARAM_VMAX, PARAM_DIRECT_COLOR, PARAM_COLOR_MODE };
-
-  private static final String[] ressourceNames = { RESSOURCE_XFORMULA, RESSOURCE_YFORMULA, RESSOURCE_ZFORMULA };
 
   private static final int CM_U = 0;
   private static final int CM_V = 1;
@@ -60,10 +56,6 @@ public class ParPlot2DWFFunc extends VariationFunc {
   private double vmax = 2.0 * Math.PI;
   private int direct_color = 1;
   private int color_mode = CM_UV;
-
-  private String xformula;
-  private String yformula;
-  private String zformula;
 
   @Override
   public void transform(FlameTransformationContext pContext, XForm pXForm, XYZPoint pAffineTP, XYZPoint pVarTP, double pAmount) {
@@ -155,31 +147,16 @@ public class ParPlot2DWFFunc extends VariationFunc {
   }
 
   @Override
-  public String[] getRessourceNames() {
-    return ressourceNames;
+  protected void initRessources() {
+      addRessource(RessourceName.XFORMULA, RessourceType.BYTEARRAY, null);
+      addRessource(RessourceName.YFORMULA, RessourceType.BYTEARRAY, null);
+      addRessource(RessourceName.ZFORMULA, RessourceType.BYTEARRAY, null);
   }
 
   @Override
-  public byte[][] getRessourceValues() {
-    return new byte[][] { (xformula != null ? xformula.getBytes() : null), (yformula != null ? yformula.getBytes() : null), (zformula != null ? zformula.getBytes() : null) };
-  }
-
-  @Override
-  public void setRessource(String pName, byte[] pValue) {
-    if (RESSOURCE_XFORMULA.equalsIgnoreCase(pName)) {
-      xformula = pValue != null ? new String(pValue) : "";
-      validatePresetId();
-    }
-    else if (RESSOURCE_YFORMULA.equalsIgnoreCase(pName)) {
-      yformula = pValue != null ? new String(pValue) : "";
-      validatePresetId();
-    }
-    else if (RESSOURCE_ZFORMULA.equalsIgnoreCase(pName)) {
-      zformula = pValue != null ? new String(pValue) : "";
-      validatePresetId();
-    }
-    else
-      throw new IllegalArgumentException(pName);
+  public void setRessource(RessourceName rName, byte[] rValue) {
+    setResourceValue(rName, rValue);
+    validatePresetId();
   }
 
   private JEPWrapper _xparser, _yparser, _zparser;
@@ -192,17 +169,17 @@ public class ParPlot2DWFFunc extends VariationFunc {
     _xparser = new JEPWrapper();
     _xparser.addVariable("u", 0.0);
     _xparser.addVariable("v", 0.0);
-    _xnode = _xparser.parse(xformula);
+    _xnode = _xparser.parse(getResourceValueString(RessourceName.XFORMULA));
 
     _yparser = new JEPWrapper();
     _yparser.addVariable("u", 0.0);
     _yparser.addVariable("v", 0.0);
-    _ynode = _yparser.parse(yformula);
+    _ynode = _yparser.parse(getResourceValueString(RessourceName.YFORMULA));
 
     _zparser = new JEPWrapper();
     _zparser.addVariable("u", 0.0);
     _zparser.addVariable("v", 0.0);
-    _znode = _zparser.parse(zformula);
+    _znode = _zparser.parse(getResourceValueString(RessourceName.ZFORMULA));
 
     _umin = umin;
     _umax = umax;
@@ -232,6 +209,9 @@ public class ParPlot2DWFFunc extends VariationFunc {
   private void validatePresetId() {
     if (preset_id >= 0) {
       ParPlot2DWFFuncPreset preset = WFFuncPresetsStore.getParPlot2DWFFuncPresets().getPreset(preset_id);
+      final String xformula = getResourceValueString(RessourceName.XFORMULA);
+      final String yformula = getResourceValueString(RessourceName.YFORMULA);
+      final String zformula = getResourceValueString(RessourceName.ZFORMULA);
       if (!preset.getXformula().equals(xformula) || !preset.getYformula().equals(yformula) || !preset.getZformula().equals(zformula) ||
           (fabs(umin - preset.getUmin()) > EPSILON) || (fabs(umax - preset.getUmax()) > EPSILON) ||
           (fabs(vmin - preset.getVmin()) > EPSILON) || (fabs(vmax - preset.getVmax()) > EPSILON)) {
@@ -242,9 +222,9 @@ public class ParPlot2DWFFunc extends VariationFunc {
 
   private void refreshFormulaFromPreset(int presetId) {
     ParPlot2DWFFuncPreset preset = WFFuncPresetsStore.getParPlot2DWFFuncPresets().getPreset(presetId);
-    xformula = preset.getXformula();
-    yformula = preset.getYformula();
-    zformula = preset.getZformula();
+    setResourceValue(RessourceName.XFORMULA, preset.getXformula().getBytes());
+    setResourceValue(RessourceName.YFORMULA, preset.getYformula().getBytes());
+    setResourceValue(RessourceName.ZFORMULA, preset.getZformula().getBytes());
     umin = preset.getUmin();
     umax = preset.getUmax();
     vmin = preset.getVmin();

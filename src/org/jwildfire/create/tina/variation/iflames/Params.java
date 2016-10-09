@@ -16,12 +16,13 @@
  */
 package org.jwildfire.create.tina.variation.iflames;
 
+import org.jwildfire.create.tina.variation.RessourceName;
 import org.jwildfire.create.tina.variation.RessourceType;
 
 public interface Params {
   String[] appendParamNames(String[] pParamNames);
 
-  String[] appendRessourceNames(String[] pRessourceNames);
+  RessourceName[] appendRessourceNames(RessourceName[] pRessourceNames);
 
   Object[] appendParamValues(Object[] pParamValues);
 

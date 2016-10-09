@@ -17,6 +17,7 @@
 package org.jwildfire.create.tina.variation;
 
 import java.io.Serializable;
+import java.util.EnumMap;
 
 import org.jwildfire.create.tina.base.Layer;
 import org.jwildfire.create.tina.base.XForm;
@@ -25,8 +26,12 @@ import org.jwildfire.create.tina.base.XYZPoint;
 @SuppressWarnings("serial")
 public abstract class VariationFunc implements Serializable {
 
-  public void init(FlameTransformationContext pContext, Layer pLayer, XForm pXForm, double pAmount) {
+  public VariationFunc() {
+      initRessources();
+  }
 
+  public void init(FlameTransformationContext pContext, Layer pLayer, XForm pXForm, double pAmount) {
+      // nothing here - may be overridden
   }
 
   public int getPriority() {
@@ -48,21 +53,115 @@ public abstract class VariationFunc implements Serializable {
 
   public abstract void setParameter(String pName, double pValue);
 
-  public String[] getRessourceNames() {
-    return null;
+  
+  /** just a helper class to store both type and value in the map **/
+  protected static class RessourceTypeValuePair {
+      public final RessourceType type;
+      public byte[] value;
+      public RessourceTypeValuePair(RessourceType type, byte[] value) {
+          this.type = type;
+          this.value = value;
+      }
+  }
+  
+  /** must be filled with all available RessourceName values in initRessources() **/
+  protected final EnumMap<RessourceName, RessourceTypeValuePair> ressources = new EnumMap<>(RessourceName.class);
+  
+  /**
+   * used in initRessources() to initialize all available ressources
+   * @param name  
+   * @param type
+   * @param value
+   */
+  protected void addRessource(RessourceName name, RessourceType type, byte[] value) {
+      this.ressources.put(name, new RessourceTypeValuePair(type, value));
+  }
+  
+  /**
+   * return the value of the specified ressource
+   * @param name
+   * @return the value, or null if the specified RessourceName is not known
+   */
+  protected byte[] getResourceValue(RessourceName name) {
+      final RessourceTypeValuePair r = this.ressources.get(name);
+      return r == null ? null : r.value;
+  }
+  
+  /**
+   * return the value of the specified ressource as a String
+   * @param name
+   * @return the value as a String, or "" (empty String) if the specified RessourceName is not known
+   */
+  protected String getResourceValueString(RessourceName name) {
+      final byte[] r = getResourceValue(name);
+      return r == null ? "" : new String(r);
+  }
+  
+  /**
+   * set the value of the specified ressource.
+   * throws IllegalArgumentException if the specified RessourceName is not known
+   * @param name
+   * @param value
+   */
+  protected void setResourceValue(RessourceName name, byte[] value) {
+      final RessourceTypeValuePair r = this.ressources.get(name);
+      if (r != null) {
+          r.value = value;
+      } else {
+          throw new IllegalArgumentException(name.toString());
+      }
   }
 
-  public byte[][] getRessourceValues() {
-    return null;
+  /**
+   * initialize the property "ressources".
+   * must be overridden by implementing classes.
+   */
+  protected void initRessources() {
+      // nothing here - must be overridden by implementing classes
+  }
+  /**
+   * set the specified ressource to the specified value.
+   * does nothing if this VariationFunc doesn't know the specified RessourceName.
+   * must be overridden by implementing classes.
+   * @param rName
+   * @param rValue
+   */
+  public void setRessource(RessourceName rName, byte[] rValue) {
+      // nothing here - must be overridden by implementing classes
   }
 
-  public void setRessource(String pName, byte[] pValue) {
+  /**
+   * return all RessourceName values
+   * @return an on-demand created array of RessourceName, or null of no RessourceName are available
+   */
+  public RessourceName[] getRessourceNames() {
+    if (this.ressources.isEmpty()) {
+      return null;
+    } else {
+      return this.ressources.keySet().toArray(new RessourceName[this.ressources.size()]);
+    }
   }
 
-  public byte[] getRessource(String pName) {
-    int idx = getRessourceIndex(pName);
-    return idx >= 0 && idx < getRessourceValues().length ? getRessourceValues()[idx] : null;
+  /**
+   * return the specified ressource
+   * @param rName
+   * @return the ressource, or null if the specified RessourceName is not known
+   */
+  public byte[] getRessource(RessourceName rName) {
+    final RessourceTypeValuePair r = this.ressources.get(rName);
+    return r == null ? null : r.value;
   }
+
+  /**
+   * return the type of the specified ressource
+   * @param rName
+   * @return  the RessourceType (
+   */
+  public RessourceType getRessourceType(RessourceName rName) {
+    final RessourceTypeValuePair r = this.ressources.get(rName);
+    return r == null ? null : r.type;
+  }
+
 
   public Object getParameter(String pName) {
     int idx = getParameterIndex(pName);
@@ -79,22 +178,6 @@ public abstract class VariationFunc implements Serializable {
       }
     }
     return -1;
-  }
-
-  public int getRessourceIndex(String pName) {
-    String ressourceNames[] = getRessourceNames();
-    if (ressourceNames != null) {
-      for (int i = 0; i < ressourceNames.length; i++) {
-        if (ressourceNames[i].equals(pName)) {
-          return i;
-        }
-      }
-    }
-    return -1;
-  }
-
-  public RessourceType getRessourceType(String pName) {
-    return RessourceType.BYTEARRAY;
   }
 
   public static double limitVal(double pValue, double pMin, double pMax) {
@@ -155,11 +238,10 @@ public abstract class VariationFunc implements Serializable {
       }
     }
     // ressources
-    String[] ressNames = this.getRessourceNames();
+    final RessourceName[] ressNames = this.getRessourceNames();
     if (ressNames != null) {
-      for (int i = 0; i < ressNames.length; i++) {
-        byte[] val = this.getRessourceValues()[i];
-        varCopy.setRessource(ressNames[i], val);
+      for (final RessourceName rName : ressNames) {
+        varCopy.setRessource(rName, this.getRessource(rName));
       }
     }
     return varCopy;

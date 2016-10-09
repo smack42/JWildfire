@@ -20,51 +20,28 @@ import org.jwildfire.create.tina.base.Layer;
 import org.jwildfire.create.tina.base.XForm;
 import org.jwildfire.create.tina.variation.FlameTransformationContext;
 import org.jwildfire.create.tina.variation.RessourceManager;
+import org.jwildfire.create.tina.variation.RessourceName;
 import org.jwildfire.create.tina.variation.RessourceType;
 
 public class OBJMeshWFFunc extends AbstractOBJMeshWFFunc {
   private static final long serialVersionUID = 1L;
 
-  private static final String RESSOURCE_OBJ_FILENAME = "obj_filename";
-  private static final String RESSOURCE_UVMAP_FILENAME = "uvmap_filename";
-
-  private static final String[] ressourceNames = { RESSOURCE_OBJ_FILENAME, RESSOURCE_UVMAP_FILENAME };
-
-  private String objFilename = null;
-
   @Override
-  public String[] getRessourceNames() {
-    return ressourceNames;
+  protected void initRessources() {
+      addRessource(RessourceName.OBJ_FILENAME, RessourceType.OBJ_MESH, null);
+      addRessource(RessourceName.UVMAP_FILENAME, RessourceType.IMAGE_FILENAME, null);
   }
 
   @Override
-  public byte[][] getRessourceValues() {
-    return new byte[][] { (objFilename != null ? objFilename.getBytes() : null), (colorMapHolder.getColormap_filename() != null ? colorMapHolder.getColormap_filename().getBytes() : null) };
-  }
-
-  @Override
-  public void setRessource(String pName, byte[] pValue) {
-    if (RESSOURCE_OBJ_FILENAME.equalsIgnoreCase(pName)) {
-      objFilename = pValue != null ? new String(pValue) : "";
+  public void setRessource(RessourceName rName, byte[] rValue) {
+    setResourceValue(rName, rValue);
+    switch (rName) {
+    case UVMAP_FILENAME:
+        colorMapHolder.setColormap_filename(rValue == null ? "" : new String(rValue));
+        clearCurrUVMap();
+        break;
+    default:
     }
-    else if (RESSOURCE_UVMAP_FILENAME.equalsIgnoreCase(pName)) {
-      colorMapHolder.setColormap_filename(pValue != null ? new String(pValue) : "");
-      clearCurrUVMap();
-    }
-    else
-      throw new IllegalArgumentException(pName);
-  }
-
-  @Override
-  public RessourceType getRessourceType(String pName) {
-    if (RESSOURCE_OBJ_FILENAME.equalsIgnoreCase(pName)) {
-      return RessourceType.OBJ_MESH;
-    }
-    else if (RESSOURCE_UVMAP_FILENAME.equalsIgnoreCase(pName)) {
-      return RessourceType.IMAGE_FILENAME;
-    }
-    else
-      throw new IllegalArgumentException(pName);
   }
 
   @Override
@@ -75,6 +52,7 @@ public class OBJMeshWFFunc extends AbstractOBJMeshWFFunc {
   @Override
   public void init(FlameTransformationContext pContext, Layer pLayer, XForm pXForm, double pAmount) {
     super.init(pContext, pLayer, pXForm, pAmount);
+    final String objFilename = getResourceValueString(RessourceName.OBJ_FILENAME);
     if (objFilename != null && objFilename.length() > 0) {
       try {
         String meshKey = this.getClass().getName() + "_" + getMeshname(objFilename);

@@ -37,6 +37,7 @@ import org.jwildfire.create.tina.randomsymmetry.RandomSymmetryGeneratorList;
 import org.jwildfire.create.tina.swing.RandomBatchQuality;
 import org.jwildfire.create.tina.variation.AbstractColorMapWFFunc;
 import org.jwildfire.create.tina.variation.RessourceManager;
+import org.jwildfire.create.tina.variation.RessourceName;
 import org.jwildfire.create.tina.variation.VariationFunc;
 import org.jwildfire.create.tina.variation.VariationFuncList;
 import org.jwildfire.image.SimpleImage;
@@ -222,14 +223,11 @@ public class WikimediaCommonsRandomFlameGenerator extends RandomFlameGenerator {
           pXForm.setWeight(2.0 * pXForm.getWeight());
         }
         if (imgData.getPageUrl() != null) {
-          imgFunc.setRessource(AbstractColorMapWFFunc.RESSOURCE_IMAGE_DESC_SRC, imgData.getPageUrl().getBytes());
+          imgFunc.setRessource(RessourceName.IMAGE_DESC_SRC, imgData.getPageUrl().getBytes());
         }
-        imgFunc.setRessource(AbstractColorMapWFFunc.RESSOURCE_INLINED_IMAGE, imgData.getData());
-        if (imgData.getPageUrl() != null) {
-          imgFunc.setRessource(AbstractColorMapWFFunc.RESSOURCE_IMAGE_DESC_SRC, imgData.getPageUrl().getBytes());
-        }
+        imgFunc.setRessource(RessourceName.INLINED_IMAGE, imgData.getData());
         if (imgData.getImgUrl() != null) {
-          imgFunc.setRessource(AbstractColorMapWFFunc.RESSOURCE_IMAGE_SRC, imgData.getImgUrl().getBytes());
+          imgFunc.setRessource(RessourceName.IMAGE_SRC, imgData.getImgUrl().getBytes());
         }
         if (Math.random() < 0.667) {
           pFlame.getFirstLayer().setPalette(imgData.getGradient());

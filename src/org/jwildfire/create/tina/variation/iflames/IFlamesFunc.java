@@ -30,6 +30,7 @@ import org.jwildfire.create.tina.random.AbstractRandomGenerator;
 import org.jwildfire.create.tina.random.MarsagliaRandomGenerator;
 import org.jwildfire.create.tina.variation.FlameTransformationContext;
 import org.jwildfire.create.tina.variation.RessourceManager;
+import org.jwildfire.create.tina.variation.RessourceName;
 import org.jwildfire.create.tina.variation.RessourceType;
 import org.jwildfire.create.tina.variation.VariationFunc;
 import org.jwildfire.image.Pixel;
@@ -45,7 +46,7 @@ public class IFlamesFunc extends VariationFunc {
 
   private final String[] paramNames = flameParams.appendParamNames(motionParams.appendParamNames(imageParams.appendParamNames(new String[0])));
 
-  private final String[] ressourceNames = flameParams.appendRessourceNames(motionParams.appendRessourceNames(imageParams.appendRessourceNames(new String[0])));
+  private final RessourceName[] ressourceNames = flameParams.appendRessourceNames(motionParams.appendRessourceNames(imageParams.appendRessourceNames(new RessourceName[0])));
 
   // derived params
   private final Pixel toolPixel = new Pixel();

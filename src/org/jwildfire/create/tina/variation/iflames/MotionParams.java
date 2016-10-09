@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.jwildfire.base.Tools;
+import org.jwildfire.create.tina.variation.RessourceName;
 import org.jwildfire.create.tina.variation.RessourceType;
 import org.jwildfire.create.tina.variation.VariationFunc;
 
@@ -60,9 +61,8 @@ public class MotionParams implements Params, Serializable {
   }
 
   @Override
-  public String[] appendRessourceNames(String[] pRessourceNames) {
-    List<String> res = new ArrayList<String>(Arrays.asList(pRessourceNames));
-    return res.toArray(pRessourceNames);
+  public RessourceName[] appendRessourceNames(RessourceName[] pRessourceNames) {
+    return pRessourceNames;
   }
 
   @Override

@@ -30,12 +30,10 @@ import org.jwildfire.create.tina.io.FlameReader;
 public class SubFlameWFFunc extends VariationFunc {
   private static final long serialVersionUID = 1L;
 
-  public static final String RESSOURCE_FLAME = "flame";
   public static final String PARAM_OFFSETX = "offset_x";
   public static final String PARAM_OFFSETY = "offset_y";
   public static final String PARAM_OFFSETZ = "offset_z";
   private static final String[] paramNames = { PARAM_OFFSETX, PARAM_OFFSETY, PARAM_OFFSETZ };
-  private static final String[] ressourceNames = { RESSOURCE_FLAME };
 
   private double offset_x = 0.0;
   private double offset_y = 0.0;
@@ -122,6 +120,7 @@ public class SubFlameWFFunc extends VariationFunc {
   }
 
   private void parseFlame() {
+    final String flameXML = getResourceValueString(RessourceName.FLAME);
     flame = null;
     xf = null;
     p = null;
@@ -193,26 +192,20 @@ public class SubFlameWFFunc extends VariationFunc {
       "</flame>\r\n" +
       "";
 
-  private String flameXML = DFLT_FLAME_XML;
-
   @Override
-  public String[] getRessourceNames() {
-    return ressourceNames;
+  protected void initRessources() {
+      addRessource(RessourceName.FLAME, RessourceType.BYTEARRAY, DFLT_FLAME_XML.getBytes());
   }
 
   @Override
-  public byte[][] getRessourceValues() {
-    return new byte[][] { (flameXML != null ? flameXML.getBytes() : null) };
-  }
-
-  @Override
-  public void setRessource(String pName, byte[] pValue) {
-    if (RESSOURCE_FLAME.equalsIgnoreCase(pName)) {
-      flameXML = pValue != null ? new String(pValue) : "";
-      parseFlame();
+  public void setRessource(RessourceName rName, byte[] rValue) {
+    setResourceValue(rName, rValue);
+    switch (rName) {
+    case FLAME:
+        parseFlame();
+        break;
+    default:
     }
-    else
-      throw new IllegalArgumentException(pName);
   }
 
 }
